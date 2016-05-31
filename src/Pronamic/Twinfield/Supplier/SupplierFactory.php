@@ -89,7 +89,7 @@ class SupplierFactory extends ParentFactory
      * @access public
      * @return array | false
      */
-    public function listAll($office = null, $dimType = 'DEB')
+    public function listAll($office = null, $dimType = 'CRD')
     {
 
         // Attempts to process the login
