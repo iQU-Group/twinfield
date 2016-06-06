@@ -83,9 +83,8 @@ class SupplierFactory extends ParentFactory
      * If the response was successful it will loop through all the results
      * in the response and make an array of the supplier ID as the array key
      * and the value being an array of 'name' and 'shortname'
-     * 
-     * If the response wasn't succesful it will return false.
-     * 
+     * If the response wasn't successful it will return false.
+     *
      * @access public
      * @return array | false
      */

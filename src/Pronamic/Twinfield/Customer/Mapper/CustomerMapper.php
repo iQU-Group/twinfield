@@ -22,7 +22,9 @@ class CustomerMapper
      * Maps a Response object to a clean Customer entity.
      *
      * @access public
+     *
      * @param \Pronamic\Twinfield\Response\Response $response
+     *
      * @return \Pronamic\Twinfield\Customer\Customer
      */
     public static function map(Response $response)
@@ -38,7 +40,7 @@ class CustomerMapper
         $customer->setStatus($dimensionElement->getAttribute('status'));
 
         // Customer elements and their methods
-        $customerTags = array(
+        $customerTags = [
             'code'              => 'setCode',
             'uid'               => 'setUID',
             'name'              => 'setName',
@@ -51,7 +53,7 @@ class CustomerMapper
             'website'           => 'setWebsite',
             'editdimensionname' => 'setEditDimensionName',
             'office'            => 'setOffice',
-        );
+        ];
 
         // Loop through all the tags
         foreach ($customerTags as $tag => $method) {
@@ -66,13 +68,13 @@ class CustomerMapper
         }
 
         // Financial elements and their methods
-        $financialsTags = array(
+        $financialsTags = [
             'duedays'      => 'setDueDays',
             'payavailable' => 'setPayAvailable',
             'paycode'      => 'setPayCode',
             'ebilling'     => 'setEBilling',
-            'ebillmail'    => 'setEBillMail'
-        );
+            'ebillmail'    => 'setEBillMail',
+        ];
 
         // Financial elements
         $financialElement = $responseDOM->getElementsByTagName('financials')->item(0);
@@ -93,28 +95,29 @@ class CustomerMapper
         $creditManagementElement = $responseDOM->getElementsByTagName('creditmanagement')->item(0);
 
         // Credit management elements and their methods
-        $creditManagementTags = array(
-            'responsibleuser'   => 'setResponsibleUser',
-            'basecreditlimit'   => 'setBaseCreditLimit',
-            'sendreminder'      => 'setSendReminder',
-            'reminderemail'     => 'setReminderEmail',
-            'blocked'           => 'setBlocked',
-            'freetext1'         => 'setFreeText1',
-            'freetext2'         => 'setFreeText2',
-            'comment'           => 'setComment'
-        );
-
-        $customer->setCreditManagement(new \Pronamic\Twinfield\Customer\CustomerCreditManagement());
+        $creditManagementTags = [
+            'responsibleuser' => 'setResponsibleUser',
+            'basecreditlimit' => 'setBaseCreditLimit',
+            'sendreminder'    => 'setSendReminder',
+            'reminderemail'   => 'setReminderEmail',
+            'blocked'         => 'setBlocked',
+            'freetext1'       => 'setFreeText1',
+            'freetext2'       => 'setFreeText2',
+            'comment'         => 'setComment',
+        ];
+        $customer->setCreditManagement(new CustomerCreditManagement());
 
         // Go through each financial element and add to the assigned method
-        foreach ($creditManagementTags as $tag => $method) {
+        if (!is_null($creditManagementElement)) {
+            foreach ($creditManagementTags as $tag => $method) {
 
-            // Get the dom element
-            $_tag = $creditManagementElement->getElementsByTagName($tag)->item(0);
+                // Get the dom element
+                $_tag = $creditManagementElement->getElementsByTagName($tag)->item(0);
 
-            // If it has a value, set it to the associated method
-            if (isset($_tag) && isset($_tag->textContent)) {
-                $customer->getCreditManagement()->$method($_tag->textContent);
+                // If it has a value, set it to the associated method
+                if (isset($_tag) && isset($_tag->textContent)) {
+                    $customer->getCreditManagement()->$method($_tag->textContent);
+                }
             }
         }
 
@@ -122,7 +125,7 @@ class CustomerMapper
         if (isset($addressesDOMTag) && $addressesDOMTag->length > 0) {
 
             // Element tags and their methods for address
-            $addressTags = array(
+            $addressTags = [
                 'name'      => 'setName',
                 'contact'   => 'setContact',
                 'country'   => 'setCountry',
@@ -137,7 +140,7 @@ class CustomerMapper
                 'field4'    => 'setField4',
                 'field5'    => 'setField5',
                 'field6'    => 'setField6',
-            );
+            ];
 
             $addressesDOM = $addressesDOMTag->item(0);
 
@@ -222,20 +225,20 @@ class CustomerMapper
         if (isset($banksDOMTag) && $banksDOMTag->length > 0) {
 
             // Element tags and their methods for bank
-            $bankTags = array(
-                'ascription'      => 'setAscription',
-                'accountnumber'   => 'setAccountnumber',
-                'field2'          => 'setAddressField2',
-                'field3'          => 'setAddressField3',
-                'bankname'        => 'setBankname',
-                'biccode'         => 'setBiccode',
-                'city'            => 'setCity',
-                'country'         => 'setCountry',
-                'iban'            => 'setIban',
-                'natbiccode'      => 'setNatbiccode',
-                'postcode'        => 'setPostcode',
-                'state'           => 'setState'
-            );
+            $bankTags = [
+                'ascription'    => 'setAscription',
+                'accountnumber' => 'setAccountnumber',
+                'field2'        => 'setAddressField2',
+                'field3'        => 'setAddressField3',
+                'bankname'      => 'setBankname',
+                'biccode'       => 'setBiccode',
+                'city'          => 'setCity',
+                'country'       => 'setCountry',
+                'iban'          => 'setIban',
+                'natbiccode'    => 'setNatbiccode',
+                'postcode'      => 'setPostcode',
+                'state'         => 'setState',
+            ];
 
             $banksDOM = $banksDOMTag->item(0);
 
