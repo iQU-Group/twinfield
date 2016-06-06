@@ -1,24 +1,26 @@
 <?php
 namespace Pronamic\Twinfield\Customer\Mapper;
 
-use \Pronamic\Twinfield\Customer\Customer;
-use \Pronamic\Twinfield\Customer\CustomerAddress;
-use \Pronamic\Twinfield\Customer\CustomerBank;
-use \Pronamic\Twinfield\Response\Response;
+use Pronamic\Twinfield\Customer\Customer;
+use Pronamic\Twinfield\Customer\CustomerAddress;
+use Pronamic\Twinfield\Customer\CustomerBank;
+use Pronamic\Twinfield\Customer\CustomerCreditManagement;
+use Pronamic\Twinfield\Customer\CustomerPostingRule;
+use Pronamic\Twinfield\Response\Response;
 
 /**
  * Maps a response DOMDocument to the corresponding entity.
- * 
- * @package Pronamic\Twinfield
- * @subpackage Mapper
- * @author Leon Rowland <leon@rowland.nl>
+ *
+ * @package       Pronamic\Twinfield
+ * @subpackage    Mapper
+ * @author        Leon Rowland <leon@rowland.nl>
  * @copyright (c) 2013, Pronamic
  */
 class CustomerMapper
 {
     /**
      * Maps a Response object to a clean Customer entity.
-     * 
+     *
      * @access public
      * @param \Pronamic\Twinfield\Response\Response $response
      * @return \Pronamic\Twinfield\Customer\Customer
@@ -27,7 +29,7 @@ class CustomerMapper
     {
         // Generate new customer object
         $customer = new Customer();
-        
+
         // Gets the raw DOMDocument response.
         $responseDOM = $response->getResponseDocument();
 
@@ -53,7 +55,7 @@ class CustomerMapper
 
         // Loop through all the tags
         foreach ($customerTags as $tag => $method) {
-            
+
             // Get the dom element
             $_tag = $responseDOM->getElementsByTagName($tag)->item(0);
 
@@ -77,7 +79,7 @@ class CustomerMapper
 
         // Go through each financial element and add to the assigned method
         foreach ($financialsTags as $tag => $method) {
-            
+
             // Get the dom element
             $_tag = $financialElement->getElementsByTagName($tag)->item(0);
 
@@ -86,10 +88,10 @@ class CustomerMapper
                 $customer->$method($_tag->textContent);
             }
         }
-        
+
         // Credit management elements
         $creditManagementElement = $responseDOM->getElementsByTagName('creditmanagement')->item(0);
-        
+
         // Credit management elements and their methods
         $creditManagementTags = array(
             'responsibleuser'   => 'setResponsibleUser',
@@ -101,12 +103,12 @@ class CustomerMapper
             'freetext2'         => 'setFreeText2',
             'comment'           => 'setComment'
         );
-        
+
         $customer->setCreditManagement(new \Pronamic\Twinfield\Customer\CustomerCreditManagement());
-        
+
         // Go through each financial element and add to the assigned method
         foreach ($creditManagementTags as $tag => $method) {
-            
+
             // Get the dom element
             $_tag = $creditManagementElement->getElementsByTagName($tag)->item(0);
 
@@ -169,6 +171,51 @@ class CustomerMapper
                 // Clean that memory!
                 unset($temp_address);
             }
+        }
+
+        $postingRulesDOMTag  = $responseDOM->getElementsByTagName('postingrules');
+        $postingRulesTags    = [
+            'id'          => 'setId',
+            'status'      => 'setStatus',
+            'currency'    => 'setCurrency',
+            'amount'      => 'setAmount',
+            'description' => 'setDescription',
+            // 'lines'       => 'setLines',
+        ];
+        $postingRuleLineTags = [
+            'office'      => 'setOffice',
+            'dimension1'  => 'setDimension1',
+            'dimension2'  => 'setDimension2',
+            'dimension3'  => 'setDimension3',
+            'ratio'       => 'setRatio',
+            'vatcode'     => 'setVatCode',
+            'description' => 'setDescription',
+        ];
+
+        if (isset($postingRulesDOMTag) && $postingRulesDOMTag->length > 0) {
+            $postingRuleDOM      = $postingRulesDOMTag->item(0);
+            $postingRuleLinesDOM = $postingRuleDOM->getElementsByTagName('lines')->item(0);
+            $postingRuleEntity   = new CustomerPostingRule();
+
+            foreach ($postingRulesTags as $key => $method) {
+                if (!is_null($postingRuleDOM->getElementsByTagName($key)->item(0))) {
+                    $postingRuleEntity->$method($postingRuleDOM->getElementsByTagName($key)->item(0)->nodeValue);
+                }
+            }
+
+            $lines = [];
+            foreach ($postingRuleLinesDOM->getElementsByTagName('line') as $postingRuleLineDOM) {
+                $line = [];
+                /** @var \DOMElement $postingRuleLineDOM */
+                foreach ($postingRuleLineTags as $key => $method) {
+                    if (!is_null($postingRuleLineDOM->getElementsByTagName($key)->item(0))) {
+                        $line[$key] = $postingRuleLineDOM->getElementsByTagName($key)->item(0)->nodeValue;
+                    }
+                }
+                $lines[] = $line;
+            }
+            $postingRuleEntity->setLines($lines);
+            $customer->addPostingRule($postingRuleEntity);
         }
 
         $banksDOMTag = $responseDOM->getElementsByTagName('banks');

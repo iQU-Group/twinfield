@@ -31,6 +31,7 @@ class Customer
     private $addresses = array();
     private $banks = array();
     private $groups;
+    private $postingRules;
 
 
     public function getOffice()
@@ -370,4 +371,25 @@ class Customer
         $this->groups = $groups;
         return $this;
     }
+
+    /**
+     * @return CustomerPostingRule[]
+     */
+    public function getPostingRules()
+    {
+        return $this->postingRules;
+    }
+
+    /**
+     * @param mixed $postingRule
+     *
+     * @return $this
+     */
+    public function addPostingRule(CustomerPostingRule $postingRule)
+    {
+        $this->postingRules[$postingRule->getID()] = $postingRule;
+        return $this;
+    }
+    
+    
 }
