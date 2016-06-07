@@ -384,7 +384,11 @@ class Supplier
      */
     public function getOnePostingRuleFromIndex($index = 0)
     {
-        $keys = array_keys($this->getPostingRules());
+        $postingRules = $this->getPostingRules();
+        if (!is_array($postingRules)) {
+            return null;
+        }
+        $keys = array_keys($postingRules);
         return $this->getPostingRules()[$keys[$index]];
     }
 
