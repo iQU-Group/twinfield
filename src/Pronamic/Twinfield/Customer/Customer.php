@@ -379,6 +379,7 @@ class Customer
     {
         return $this->postingRules;
     }
+
     /**
      * @param int $index
      *
@@ -386,7 +387,11 @@ class Customer
      */
     public function getOnePostingRuleFromIndex($index = 0)
     {
-        $keys = array_keys($this->getPostingRules());
+        $postingRules = $this->getPostingRules();
+        if (!is_array($postingRules)) {
+            return null;
+        }
+        $keys = array_keys($postingRules);
         return $this->getPostingRules()[$keys[$index]];
     }
 
@@ -400,6 +405,5 @@ class Customer
         $this->postingRules[$postingRule->getID()] = $postingRule;
         return $this;
     }
-    
-    
+
 }
