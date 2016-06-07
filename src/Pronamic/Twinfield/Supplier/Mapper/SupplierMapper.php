@@ -5,6 +5,7 @@ use \Pronamic\Twinfield\Supplier\Supplier;
 use \Pronamic\Twinfield\Supplier\SupplierAddress;
 use \Pronamic\Twinfield\Supplier\SupplierBank;
 use \Pronamic\Twinfield\Response\Response;
+use Pronamic\Twinfield\Supplier\SupplierPostingRule;
 
 /**
  * Maps a response DOMDocument to the corresponding entity.
@@ -140,6 +141,51 @@ class SupplierMapper
                 // Clean that memory!
                 unset($temp_address);
             }
+        }
+
+        $postingRulesDOMTag  = $responseDOM->getElementsByTagName('postingrules');
+        $postingRulesTags    = [
+            'id'          => 'setId',
+            'status'      => 'setStatus',
+            'currency'    => 'setCurrency',
+            'amount'      => 'setAmount',
+            'description' => 'setDescription',
+            // 'lines'       => 'setLines',
+        ];
+        $postingRuleLineTags = [
+            'office'      => 'setOffice',
+            'dimension1'  => 'setDimension1',
+            'dimension2'  => 'setDimension2',
+            'dimension3'  => 'setDimension3',
+            'ratio'       => 'setRatio',
+            'vatcode'     => 'setVatCode',
+            'description' => 'setDescription',
+        ];
+
+        if (isset($postingRulesDOMTag) && $postingRulesDOMTag->length > 0) {
+            $postingRuleDOM      = $postingRulesDOMTag->item(0);
+            $postingRuleLinesDOM = $postingRuleDOM->getElementsByTagName('lines')->item(0);
+            $postingRuleEntity   = new SupplierPostingRule();
+
+            foreach ($postingRulesTags as $key => $method) {
+                if (!is_null($postingRuleDOM->getElementsByTagName($key)->item(0))) {
+                    $postingRuleEntity->$method($postingRuleDOM->getElementsByTagName($key)->item(0)->nodeValue);
+                }
+            }
+
+            $lines = [];
+            foreach ($postingRuleLinesDOM->getElementsByTagName('line') as $postingRuleLineDOM) {
+                $line = [];
+                /** @var \DOMElement $postingRuleLineDOM */
+                foreach ($postingRuleLineTags as $key => $method) {
+                    if (!is_null($postingRuleLineDOM->getElementsByTagName($key)->item(0))) {
+                        $line[$key] = $postingRuleLineDOM->getElementsByTagName($key)->item(0)->nodeValue;
+                    }
+                }
+                $lines[] = $line;
+            }
+            $postingRuleEntity->setLines($lines);
+            $supplier->addPostingRule($postingRuleEntity);
         }
 
         $banksDOMTag = $responseDOM->getElementsByTagName('banks');

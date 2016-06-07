@@ -379,6 +379,16 @@ class Customer
     {
         return $this->postingRules;
     }
+    /**
+     * @param int $index
+     *
+     * @return CustomerPostingRule
+     */
+    public function getOnePostingRuleFromIndex($index = 0)
+    {
+        $keys = array_keys($this->getPostingRules());
+        return $this->getPostingRules()[$keys[$index]];
+    }
 
     /**
      * @param mixed $postingRule

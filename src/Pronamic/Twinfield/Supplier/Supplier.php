@@ -31,7 +31,7 @@ class Supplier
     private $addresses    = [];
     private $banks        = [];
     private $groups;
-
+    private $postingRules;
 
     public function getOffice()
     {
@@ -369,4 +369,34 @@ class Supplier
         $this->groups = $groups;
         return $this;
     }
+
+    /**
+     * @return SupplierPostingRule[]
+     */
+    public function getPostingRules()
+    {
+        return $this->postingRules;
+    }
+    /**
+     * @param int $index
+     *
+     * @return SupplierPostingRule
+     */
+    public function getOnePostingRuleFromIndex($index = 0)
+    {
+        $keys = array_keys($this->getPostingRules());
+        return $this->getPostingRules()[$keys[$index]];
+    }
+
+    /**
+     * @param mixed $postingRule
+     *
+     * @return $this
+     */
+    public function addPostingRule(SupplierPostingRule $postingRule)
+    {
+        $this->postingRules[$postingRule->getID()] = $postingRule;
+        return $this;
+    }
+    
 }
