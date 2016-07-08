@@ -131,12 +131,7 @@ class InvoiceFactory extends ParentFactory
             $response = $service->send($invoicesDocument);
             $this->setResponse($response);
 
-            // Return a bool on status of response
-            if ($response->isSuccessful()) {
-                return true;
-            } else {
-                return false;
-            }
+            return $response;
         }
     }
 }

@@ -68,12 +68,7 @@ class TransactionFactory extends ParentFactory
             $response = $service->send($transactionsDocument);
             $this->setResponse($response);
 
-            if ($response->isSuccessful()) {
-                return true;
-            } else {
-                // should throw exception?
-                return false;
-            }
+            return $response;
         }
     }
 }
