@@ -179,12 +179,7 @@ class SupplierFactory extends ParentFactory
             $response = $service->send($suppliersDocument);
             $this->setResponse($response);
 
-            // Return a bool on status of response.
-            if ($response->isSuccessful()) {
-                return true;
-            } else {
-                return false;
-            }
+            return $response;
         }
     }
     
