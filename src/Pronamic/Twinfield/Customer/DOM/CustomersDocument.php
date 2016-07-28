@@ -82,7 +82,7 @@ class CustomersDocument extends \DOMDocument
         }
 
         // Check if the financial information should be supplied
-        if ($customer->getDueDays() > 0) {
+        if ($customer->getDueDays() >= 0) {
 
             // Financial elements and their methods
             $financialsTags = array(
