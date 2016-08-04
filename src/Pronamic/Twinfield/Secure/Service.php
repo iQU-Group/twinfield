@@ -88,7 +88,6 @@ class Service
         $this->result = $this->login->getClient()->ProcessXmlString(
             array('xmlRequest' => $document->saveXML())
         );
-
         // Make a new DOMDocument, and load the response into it
         $this->response = new \DOMDocument();
         $this->response->loadXML($this->result->ProcessXmlStringResult);

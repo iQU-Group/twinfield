@@ -21,6 +21,8 @@ class InvoiceLine
     private $freeText3;
     private $performanceDate;
     private $dim1;
+    private $dim2;
+    private $performanceType;
 
     public function __construct($quantity = null, $article = null, $freeText1 = null, $freeText2 = null)
     {
@@ -241,5 +243,15 @@ class InvoiceLine
         return $this;
     }
 
+    public function getPerformanceType()
+    {
+        return $this->performanceType;
+    }
 
+    public function setPerformanceType($performanceType)
+    {
+        $this->performanceType = $performanceType;
+
+        return $this;
+    }
 }
